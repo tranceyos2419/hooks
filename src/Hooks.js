@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Axios from "axios";
+import { useTodos } from "./hooks/todos";
 
 //* componentDidUpdate => useEffect(()=>{},[])
 //* componentDidUpdate => useEffect(()=>{},[state,props])
@@ -8,23 +9,17 @@ import Axios from "axios";
 //* shouldComponentUpdate => React.memo(function,(prevProps,nextProps)=>{return false})
 
 //? .bind()
+//? useReducer
+//? useContext
 
 //* React.memo() => Stop rendering component unless passed props or state inside of the component are changed
 
 export default function Hooks() {
   const [title, setTitle] = useState("Hooks");
   const [words, setWords] = useState("");
-  const [Todos, setTodos] = useState(null);
   const [MyTodo, setMyTodo] = useState([]);
   const [Counter, setCounter] = useState(1);
-
-  useEffect(() => {
-    Axios.get(`https://jsonplaceholder.typicode.com/todos`)
-      .then(res => {
-        setTodos(res.data);
-      })
-      .catch(e => console.log(e));
-  }, []);
+  const Todos = useTodos([]);
 
   useEffect(() => {
     Axios.get(`https://jsonplaceholder.typicode.com/todos/${Counter}`)
