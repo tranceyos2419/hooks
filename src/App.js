@@ -1,12 +1,10 @@
 import React, { Component } from "react";
-import logo from "./logo.svg";
-import "./App.css";
 import Hooks from "./Hooks";
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
+      <div style={{ textAlign: "center" }}>
         <Hooks />
       </div>
     );
