@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useReducer } from "react";
 import Axios from "axios";
 import { useTodos } from "./hooks/todos";
+import { useCounterValue } from "./context/counter/counter";
+import { INCREMENT, RESET } from "./context/counter/counterType";
 
 //* componentDidUpdate => useEffect(()=>{},[])
 //* componentDidUpdate => useEffect(()=>{},[state,props])
@@ -8,44 +10,28 @@ import { useTodos } from "./hooks/todos";
 //! React.memo() works opposite to shouldComponentUpdate
 //* shouldComponentUpdate => React.memo(function,(prevProps,nextProps)=>{return false})
 
+// React.memo() => Stop rendering component unless passed props or state inside of the component are changed
+
 //? .bind()
-//? useContext
-
-//* React.memo() => Stop rendering component unless passed props or state inside of the component are changed
-
-const initialState = { count: 1 };
-const INCREMENT = "INCREMENT";
-const RESET = "RESET";
-
-const init = () => {
-  return initialState;
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case INCREMENT:
-      return { count: state.count + 1 };
-    case RESET:
-      return init(action.payload);
-    default:
-      return state;
-  }
-};
 
 export default function Hooks() {
   const [title, setTitle] = useState("Hooks");
   const [words, setWords] = useState("");
   const [MyTodo, setMyTodo] = useState([]);
-  const [state, dispatch] = useReducer(reducer, initialState, init);
+  const [{ count }, dispatch] = useCounterValue();
   const Todos = useTodos([]);
 
   useEffect(() => {
-    Axios.get(`https://jsonplaceholder.typicode.com/todos/${state.count}`)
-      .then(res => {
-        setMyTodo([...MyTodo, res.data]);
-      })
-      .catch(e => console.log(e));
-  }, [state.count]);
+    if (count === 1) {
+      setMyTodo([]);
+    } else {
+      Axios.get(`https://jsonplaceholder.typicode.com/todos/${count}`)
+        .then(res => {
+          setMyTodo([...MyTodo, res.data]);
+        })
+        .catch(e => console.log(e));
+    }
+  }, [count]);
 
   console.log(`my todo ${JSON.stringify(MyTodo)}`);
   return (
@@ -57,11 +43,9 @@ export default function Hooks() {
         onChange={e => setWords(e.target.value)}
       />
       <br />
-      <p>Counter :{state.count}</p>
+      <p>Counter :{count}</p>
       <button onClick={() => dispatch({ type: INCREMENT })}>Increment</button>
-      <button onClick={() => dispatch({ type: RESET, payload: 1 })}>
-        Reset
-      </button>
+      <button onClick={() => dispatch({ type: RESET })}>Reset</button>
       <br />
       <h3>My Todo list</h3>
       <ul>
